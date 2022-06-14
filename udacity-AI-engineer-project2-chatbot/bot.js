@@ -41,11 +41,13 @@ class DentaBot extends ActivityHandler {
             // }
             // else {...}
             if (luisReponse.luisResult.prediction.topIntent === "ScheduleAppointment" && luisReponse.intents.ScheduleAppointment.score > 0.5){
-                let time = luisReponse.entities.$instance.datetime[0].text;
-                let setupAppointment = await this.DentistScheduler.scheduleAppointment(time);
-                await context.sendActivity(setupAppointment);
-                await next();
-                return;
+                if (luisReponse.entities.$instance && luisReponse.entities.$instance.datetime){
+                    let time = luisReponse.entities.$instance.datetime[0].text;
+                    let setupAppointment = await this.DentistScheduler.scheduleAppointment(time);
+                    await context.sendActivity(setupAppointment);
+                    await next();
+                    return;
+                }
             }
             if (luisReponse.luisResult.prediction.topIntent === "GetAvailability" && luisReponse.intents.GetAvailability.score > 0.5) {
                 let available = await this.DentistScheduler.getAvailability();
